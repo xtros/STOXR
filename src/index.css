@@ -1,0 +1,160 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 8%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 80%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 8%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans font-medium;
+    letter-spacing: -0.025em;
+    line-height: 1.5;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .hover-lift {
+    @apply transition-all duration-200 hover:shadow-soft hover:-translate-y-1;
+  }
+  
+  .glow-effect {
+    @apply shadow-glow;
+  }
+}
+
+/* Custom Sleek Dark Minimalist Scrollbar (Zero arrows, floating pill) */
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+*::-webkit-scrollbar-button,
+::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button:start,
+*::-webkit-scrollbar-button:end,
+*::-webkit-scrollbar-button:single-button,
+*::-webkit-scrollbar-button:vertical:decrement,
+*::-webkit-scrollbar-button:vertical:increment,
+*::-webkit-scrollbar-button:horizontal:decrement,
+*::-webkit-scrollbar-button:horizontal:increment {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track-piece,
+::-webkit-scrollbar-track-piece {
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #3f3f46 !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent !important;
+  background-clip: padding-box !important;
+  transition: background-color 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #71717a !important;
+}
+
+*::-webkit-scrollbar-corner,
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Firefox only (Gecko does not render arrow buttons with thin scrollbars) */
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #3f3f46 transparent;
+  }
+}
+
+/* Utility to completely hide scrollbars where appropriate */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+}
+@supports (-moz-appearance: none) {
+  .no-scrollbar {
+    scrollbar-width: none !important;
+  }
+}
+
+/* User Display Preference: Reduced Motion / Instant Transitions */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
