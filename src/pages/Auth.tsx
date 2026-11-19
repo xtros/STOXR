@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { AlertCircle, Eye, EyeOff, CheckCircle2, ArrowLeft, Mail, KeyRound } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, CheckCircle2, ArrowLeft, Mail, KeyRound, ShieldAlert } from 'lucide-react';
+import { sanitizeEmail, sanitizeText, validatePassword, authRateLimiter } from '@/lib/security';
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'reset-password';
 
@@ -65,14 +66,43 @@ const Auth = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    setLoading(true);
 
-    const cleanEmail = email.trim();
+    // Check rate limit throttle against brute force attacks
+    const rateCheck = authRateLimiter.checkAllowed();
+    if (!rateCheck.allowed) {
+      setError(`Too many requests. For security, please wait ${rateCheck.remainingSec}s before trying again.`);
+      return;
+    }
+
+    // Sanitize and validate inputs
+    let cleanEmail = '';
+    if (mode !== 'reset-password') {
+      const emailResult = sanitizeEmail(email);
+      if (!emailResult.valid) {
+        setError(emailResult.error || 'Please enter a valid email address.');
+        return;
+      }
+      cleanEmail = emailResult.cleanEmail;
+    }
+
+    if (mode !== 'forgot') {
+      const passResult = validatePassword(password);
+      if (!passResult.valid) {
+        setError(passResult.error || 'Invalid password.');
+        return;
+      }
+    }
+
+    const cleanFullName = mode === 'signup' ? sanitizeText(fullName, 60) : '';
+
+    setLoading(true);
 
     try {
       if (mode === 'login') {
         const { data, error: signInError } = await signIn(cleanEmail, password);
         if (signInError) {
+          authRateLimiter.recordFailure();
+
           // Check if this email is registered
           let isRegistered = true;
           try {
@@ -114,15 +144,15 @@ const Auth = () => {
           return;
         }
 
-        const loggedInUser = data?.user;
-        const role = loggedInUser?.user_metadata?.role;
-        if (role === 'admin' || cleanEmail === 'admin@stoxr.com') {
+        authRateLimiter.reset();
+
+        if (cleanEmail === 'admin@stoxr.com') {
           navigate('/admin');
         } else {
           navigate('/');
         }
       } else if (mode === 'signup') {
-        const { error: signUpError } = await signUp(cleanEmail, password, fullName.trim());
+        const { error: signUpError } = await signUp(cleanEmail, password, cleanFullName);
         if (signUpError) {
           if (signUpError.message === 'User already registered') {
             setError('An account with this email already exists. Please try signing in instead.');
@@ -130,6 +160,7 @@ const Auth = () => {
             setError(signUpError.message);
           }
         } else {
+          authRateLimiter.reset();
           // Attempt immediate login for the auto-confirmed account
           const { error: autoSignInError } = await signIn(cleanEmail, password);
           if (!autoSignInError) {
@@ -141,12 +172,6 @@ const Auth = () => {
           }
         }
       } else if (mode === 'forgot') {
-        if (!cleanEmail) {
-          setError('Please enter your email address.');
-          setLoading(false);
-          return;
-        }
-
         const { error: resetError } = await resetPassword(cleanEmail);
         if (resetError) {
           setError(resetError.message || 'Failed to send password reset email.');
@@ -154,11 +179,6 @@ const Auth = () => {
           setSuccess('Password reset link sent! Check your inbox for instructions to reset your password.');
         }
       } else if (mode === 'reset-password') {
-        if (!password || password.length < 6) {
-          setError('Password must be at least 6 characters long.');
-          setLoading(false);
-          return;
-        }
         if (password !== confirmPassword) {
           setError('Passwords do not match.');
           setLoading(false);

@@ -44,6 +44,7 @@ import { useWatchlist } from "@/contexts/WatchlistContext";
 import { useSettings, type DisplayDensity } from "@/contexts/SettingsContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { validatePassword, sanitizeText } from "@/lib/security";
 
 export default function Settings() {
   const { user, profile, isAdmin, role, refreshProfile } = useAuth();
@@ -92,7 +93,7 @@ export default function Settings() {
 
       // 2. Persist profile update to Supabase if authenticated
       if (user?.id) {
-        const combinedName = `${settings.firstName} ${settings.lastName}`.trim();
+        const combinedName = sanitizeText(`${settings.firstName} ${settings.lastName}`, 60);
         
         // Update user auth metadata
         await supabase.auth.updateUser({
@@ -126,8 +127,9 @@ export default function Settings() {
   // Handle Password Update
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    const passCheck = validatePassword(newPassword);
+    if (!passCheck.valid) {
+      toast.error(passCheck.error || "Password does not meet requirements.");
       return;
     }
     if (newPassword !== confirmPassword) {

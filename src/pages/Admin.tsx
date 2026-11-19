@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Users, 
@@ -22,12 +23,19 @@ import { supabaseKeepAlive } from '@/services/supabaseKeepAlive';
 import { toast } from 'sonner';
 
 export default function Admin() {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin, loading } = useAuth();
+  const navigate = useNavigate();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [pinging, setPinging] = useState(false);
   const [lastPingTime, setLastPingTime] = useState<string>(new Date().toLocaleTimeString());
   const [isUpdatingRole, setIsUpdatingRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && !isAdmin) {
+      navigate('/', { replace: true });
+    }
+  }, [isAdmin, loading, navigate]);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
@@ -96,6 +104,10 @@ export default function Admin() {
       setIsUpdatingRole(null);
     }
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto text-white">

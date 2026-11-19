@@ -41,11 +41,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Derive role
+  // Derive role securely: only trust authenticated database profile or root admin email (never client-supplied user_metadata)
   const role: 'admin' | 'user' = (
-    user?.user_metadata?.role === 'admin' ||
     profile?.role === 'admin' ||
-    user?.email === 'admin@stoxr.com'
+    user?.email?.toLowerCase() === 'admin@stoxr.com'
   ) ? 'admin' : 'user';
 
   const isAdmin = role === 'admin';
