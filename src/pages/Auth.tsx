@@ -73,8 +73,38 @@ const Auth = () => {
       if (mode === 'login') {
         const { data, error: signInError } = await signIn(cleanEmail, password);
         if (signInError) {
+          // Check if this email is registered
+          let isRegistered = true;
+          try {
+            const { data: exists, error: rpcError } = await supabase.rpc('check_email_exists', {
+              email_to_check: cleanEmail,
+            });
+            if (!rpcError && typeof exists === 'boolean') {
+              isRegistered = exists;
+            } else {
+              // Fallback probe
+              const probe = await supabase.auth.signInWithOtp({
+                email: cleanEmail,
+                options: { shouldCreateUser: false },
+              });
+              if (probe.error && probe.error.status === 422 && probe.error.message.includes('Signups not allowed')) {
+                isRegistered = false;
+              }
+            }
+          } catch {
+            isRegistered = true;
+          }
+
+          if (!isRegistered) {
+            // Not registered: redirect to Sign Up mode with email pre-filled
+            setMode('signup');
+            setError(`No account found for "${cleanEmail}". We've redirected you to Sign Up so you can create your account.`);
+            setLoading(false);
+            return;
+          }
+
           if (signInError.message === 'Invalid login credentials') {
-            setError('Invalid email or password. Please verify your credentials or create an account.');
+            setError('Incorrect password. Please verify your password or use "Forgot password?".');
           } else if (signInError.message.toLowerCase().includes('email not confirmed')) {
             setError('Email confirmation required. Your account has been verified, please try signing in again.');
           } else {
