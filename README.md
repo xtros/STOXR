@@ -21,19 +21,20 @@
   <br />
 
   <p align="center">
-    <a href="#-key-features">Key Features</a> •
-    <a href="#️-system-architecture">System Architecture</a> •
-    <a href="#-market-coverage">Market Coverage</a> •
-    <a href="#-quick-start">Quick Start</a> •
-    <a href="#-keep-alive-daemon">Keep-Alive Daemon</a> •
-    <a href="#-project-structure">Project Structure</a> •
-    <a href="#-license">License</a>
+    <a href="#key-features">Key Features</a> •
+    <a href="#system-architecture">System Architecture</a> •
+    <a href="#market-coverage">Market Coverage</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#keep-alive-daemon">Keep-Alive Daemon</a> •
+    <a href="#project-structure">Project Structure</a> •
+    <a href="#license">License</a>
   </p>
 
 </div>
 
 ---
 
+<a id="key-features"></a>
 ## 🌟 Key Features
 
 | Capability | Description | Status |
@@ -48,6 +49,7 @@
 
 ---
 
+<a id="system-architecture"></a>
 ## 🏛️ System Architecture
 
 ```mermaid
@@ -116,7 +118,8 @@ $$\text{Signal Confidence} = \mathbf{w_t} \cdot S_{\text{tech}} + \mathbf{w_s} \
 
 ---
 
-## 🌐 Supported Markets
+<a id="market-coverage"></a>
+## 🌐 Market Coverage & Supported Instruments
 
 STOXR seamlessly manages international currency representations, exchange formatting, and timezone-specific trading sessions:
 
@@ -127,6 +130,7 @@ STOXR seamlessly manages international currency representations, exchange format
 
 ---
 
+<a id="quick-start"></a>
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -168,6 +172,7 @@ Navigate to `http://localhost:8080` (or `http://localhost:5173`) to view the app
 
 ---
 
+<a id="keep-alive-daemon"></a>
 ## 🛡️ Keep-Alive Daemon
 
 Free-tier Supabase databases automatically pause after inactivity. STOXR includes a dedicated background keep-alive daemon that pings your instance every 6 hours to maintain 100% uptime:
@@ -190,6 +195,7 @@ bun run keepalive
 
 ---
 
+<a id="project-structure"></a>
 ## 📂 Project Structure
 
 <details open>
@@ -234,6 +240,7 @@ STOXR/
 
 ---
 
+<a id="tech-stack"></a>
 ## 🛠️ Tech Stack
 
 <div align="center">
@@ -251,6 +258,7 @@ STOXR/
 
 ---
 
+<a id="contributing"></a>
 ## 🤝 Contributing
 
 Contributions, feedback, and pull requests are welcomed!
@@ -263,6 +271,7 @@ Contributions, feedback, and pull requests are welcomed!
 
 ---
 
+<a id="license"></a>
 ## 📄 License
 
 Distributed under the **AGPL-3.0 License**. See [LICENSE](LICENSE) for more information.
